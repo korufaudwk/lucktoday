@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오늘의 운세 & 명언</title>
+    <style>
+        /* 기본 디자인 설정 (모바일 앱 느낌) */
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .app-container {
+            background-color: white;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            padding: 30px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            font-size: 14px;
+            color: #666;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+        }
+        select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+            outline: none;
+        }
+        .btn-main {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px;
+            width: 100%;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-main:hover {
+            background-color: #45a049;
+        }
+        .btn-share {
+            background-color: #ffe812;
+            color: #333;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        
+        /* 결과 카드 디자인 */
+        #result-section {
+            display: none;
+            margin-top: 30px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .card {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            text-align: left;
+            border-left: 5px solid #4CAF50;
+        }
+        .card.quote {
+            border-left: 5px solid #2196F3;
+        }
+        .card h2 {
+            font-size: 16px;
+            margin-top: 0;
+            color: #333;
+        }
+        .card p {
+            font-size: 15px;
+            color: #555;
+            line-height: 1.5;
+        }
+        .lucky-info {
+            font-size: 13px !important;
+            color: #888 !important;
+            margin-top: 15px;
+        }
+        .author {
+            text-align: right;
+            font-weight: bold;
+            margin-top: 10px;
+            color: #333 !important;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <h1>✨ 오늘의 운세 & 명언</h1>
+    
+    <div class="input-group">
+        <label for="zodiac">나의 별자리 선택</label>
+        <select id="zodiac">
+            <option value="aries">양자리 (3/21~4/19)</option>
+            <option value="taurus">황소자리 (4/20~5/20)</option>
+            <option value="gemini">쌍둥이자리 (5/21~6/21)</option>
+            <option value="cancer">게자리 (6/22~7/22)</option>
+            <option value="leo">사자자리 (7/23~8/22)</option>
+            <option value="virgo">처녀자리 (8/23~9/22)</option>
+            <option value="libra">천칭자리 (9/23~10/22)</option>
+            <option value="scorpio">전갈자리 (10/23~11/22)</option>
+            <option value="sagittarius">사수자리 (11/23~12/24)</option>
+            <option value="capricorn">염소자리 (12/25~1/19)</option>
+            <option value="aquarius">물병자리 (1/20~2/18)</option>
+            <option value="pisces">물고기자리 (2/19~3/20)</option>
+        </select>
+    </div>
+
+    <button class="btn-main" onclick="showResult()">오늘의 하루 시작하기</button>
+
+    <!-- 결과가 나오는 영역 -->
+    <div id="result-section">
+        <div class="card">
+            <h2>🔮 오늘의 운세</h2>
+            <p id="fortune-text">운세 내용이 여기에 나옵니다.</p>
+            <p class="lucky-info">🎨 행운의 색: <span id="lucky-color"></span> | 🔢 행운의 숫자: <span id="lucky-num"></span></p>
+        </div>
+
+        <div class="card quote">
+            <h2>💡 오늘의 명언</h2>
+            <p id="quote-text">명언 내용이 여기에 나옵니다.</p>
+            <p class="author" id="quote-author">- 작자 미상</p>
+        </div>
+
+        <button class="btn-share" onclick="shareResult()">카카오톡 등에 공유하기</button>
+    </div>
+</div>
+
+<script>
+    // 운세 데이터 베이스 (예시)
+    const fortunes = [
+        "오늘은 뜻밖의 귀인을 만나 도움을 받을 수 있는 날입니다. 열린 마음으로 사람들을 대하세요.",
+        "그동안 노력했던 일에서 드디어 작은 결실을 맺게 됩니다. 스스로를 칭찬해 주어도 좋습니다.",
+        "새로운 것을 배우거나 시작하기에 완벽한 하루입니다. 망설이던 일이 있다면 오늘 도전해보세요.",
+        "평소보다 직감력이 뛰어난 날입니다. 중요한 결정이 있다면 본인의 느낌을 믿어보세요.",
+        "주변 사람들과의 소통이 행운을 가져다줍니다. 먼저 따뜻한 안부 인사를 건네보는 것은 어떨까요?",
+        "오늘 하루는 잠시 쉬어가는 여유가 필요합니다. 따뜻한 차 한 잔과 함께 생각 정리를 해보세요."
+    ];
+
+    // 명언 데이터 베이스 (예시)
+    const quotes = [
+        { text: "행복은 습관이다, 그것을 몸에 지니라.", author: "허버드" },
+        { text: "성공의 비결은 단 한 가지, 잘할 수 있는 일에 광적으로 집중하는 것이다.", author: "톰 모나건" },
+        { text: "자신을 믿어라. 겸손하지만 합리적인 자신감 없이는 성공할 수도 행복할 수도 없다.", author: "노먼 빈센트 필" },
+        { text: "작은 기회로부터 종종 위대한 업적이 시작된다.", author: "데모스테네스" },
+        { text: "무엇이라도 꿈을 꿀 수 있다면 그것을 실행하는 것 역시 가능하다.", author: "월트 디즈니" }
+    ];
+
+    const colors = ["빨간색", "파란색", "노란색", "초록색", "보라색", "흰색", "검은색", "핑크색", "베이지색"];
+
+    // 별자리와 오늘 날짜를 섞어서 '오늘 하루 고정된' 숫자를 만드는 마법의 함수!
+    // (계속 눌러도 오늘 하루는 내 별자리에 똑같은 운세가 나오게 함)
+    function getDailyIndex(zodiac, maxArrayLength) {
+        const today = new Date();
+        const dateStr = `${today.getFullYear()}${today.getMonth()}${today.getDate()}`;
+        const combined = zodiac + dateStr;
+        
+        let hash = 0;
+        for (let i = 0; i < combined.length; i++) {
+            hash = combined.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return Math.abs(hash) % maxArrayLength;
+    }
+
+    function showResult() {
+        const zodiac = document.getElementById('zodiac').value;
+        const zodiacName = document.getElementById('zodiac').options[document.getElementById('zodiac').selectedIndex].text;
+        
+        // 날짜와 별자리를 기반으로 고유한 인덱스 추출
+        const fortuneIdx = getDailyIndex(zodiac + "fortune", fortunes.length);
+        const quoteIdx = getDailyIndex(zodiac + "quote", quotes.length);
+        const colorIdx = getDailyIndex(zodiac + "color", colors.length);
+        const luckyNum = (getDailyIndex(zodiac + "num", 99)) + 1; // 1~99 랜덤 고정
+
+        // 화면에 내용 덮어쓰기
+        document.getElementById('fortune-text').innerText = fortunes[fortuneIdx];
+        document.getElementById('lucky-color').innerText = colors[colorIdx];
+        document.getElementById('lucky-num').innerText = luckyNum;
+        
+        document.getElementById('quote-text').innerText = '"' + quotes[quoteIdx].text + '"';
+        document.getElementById('quote-author').innerText = "- " + quotes[quoteIdx].author;
+
+        // 결과 영역 보여주기
+        document.getElementById('result-section').style.display = 'block';
+    }
+
+    // 공유하기 기능 (스마트폰에서 잘 작동함)
+    function shareResult() {
+        const fortune = document.getElementById('fortune-text').innerText;
+        const quote = document.getElementById('quote-text').innerText;
+        
+        const shareText = `[나의 오늘의 운세]\n${fortune}\n\n[오늘의 명언]\n${quote}\n\n우리도 같이 운세 확인해볼래?`;
+
+        if (navigator.share) {
+            // 모바일 기기 등 공유 API를 지원하는 경우
+            navigator.share({
+                title: '오늘의 운세 & 명언',
+                text: shareText
+            }).catch(console.error);
+        } else {
+            // PC 등 지원하지 않는 경우 클립보드 복사
+            navigator.clipboard.writeText(shareText).then(() => {
+                alert("결과가 클립보드에 복사되었습니다! 카카오톡이나 메시지 창에 붙여넣기 해보세요.");
+            });
+        }
+    }
+</script>
+
+</body>
+</html>
